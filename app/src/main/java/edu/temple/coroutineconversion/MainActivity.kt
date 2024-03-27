@@ -6,21 +6,25 @@ import android.os.Handler
 import android.os.Looper
 import android.widget.Button
 import android.widget.ImageView
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
-    //TODO (Refactor to replace Thread code with coroutines)
+    //(Refactor to replace Thread code with coroutines)
 
     lateinit var cakeImageView: ImageView
 
-    val handler = Handler(Looper.getMainLooper(), Handler.Callback {
+    private val scope = CoroutineScope(Job() + Dispatchers.Default)
+
+    /*val handler = Handler(Looper.getMainLooper(), Handler.Callback {
         cakeImageView.alpha = it.what / 100f
         true
-    })
+    })*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,13 +33,17 @@ class MainActivity : AppCompatActivity() {
         cakeImageView = findViewById(R.id.imageView)
 
         findViewById<Button>(R.id.revealButton).setOnClickListener{
-            GlobalScope.launch(Dispatchers.Main){//replace Thread
-                repeat(100) {
-                    handler.sendEmptyMessage(it)
-                    delay(40)
-                    //Thread.sleep(40)
-                }
-            }//.start()
+            scope.launch{reveal()}
+        }
+    }
+    private suspend fun reveal(){
+        repeat(100) {
+            //handler.sendEmptyMessage(it) //replace handler with withContext
+            withContext(Dispatchers.Main){
+                cakeImageView.alpha = it / 100f
+            }
+            delay(40)
+            //Thread.sleep(40)
         }
     }
 }
