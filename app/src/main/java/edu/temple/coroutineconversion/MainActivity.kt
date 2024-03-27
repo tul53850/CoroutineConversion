@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var cakeImageView: ImageView
 
-    private val scope = CoroutineScope(Job() + Dispatchers.Default)
+    private val scope = CoroutineScope(Job() + Dispatchers.Main)
 
     /*val handler = Handler(Looper.getMainLooper(), Handler.Callback {
         cakeImageView.alpha = it.what / 100f
@@ -38,10 +38,8 @@ class MainActivity : AppCompatActivity() {
     }
     private suspend fun reveal(){
         repeat(100) {
-            //handler.sendEmptyMessage(it) //replace handler with withContext
-            withContext(Dispatchers.Main){
-                cakeImageView.alpha = it / 100f
-            }
+            //handler.sendEmptyMessage(it) //replace handler with withContex
+            cakeImageView.alpha = it / 100f
             delay(40)
             //Thread.sleep(40)
         }
